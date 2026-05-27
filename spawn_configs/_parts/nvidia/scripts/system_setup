@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo Installing VSCode
+
+if command -v yum >/dev/null; then
+
+	# TODO handle yum case
+
+elif command -v apt >/dev/null; then
+
+	# TODO determine host capability. Assuming version 580 is available for now
+	apt -q update
+	apt -q -y install software-properties-common
+	add-apt-repository -q ppa:graphics-drivers/ppa
+	apt install -q -y nvidia-driver-580
+
+fi

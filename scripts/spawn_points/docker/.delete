@@ -1,0 +1,7 @@
+for instance in $(docker ps | grep $instance_name | sed -E "s/^([a-z0-9]+)[ \t]+([a-zA-Z0-9_-]+)[ \t]+.*$/\2:\1/"); do
+    docker container stop $(echo $instance | sed -e "s/${instance_name}://")
+done
+
+docker image rm -f $instance_name
+
+rm -rf ~/.spawn/machines/${machine}

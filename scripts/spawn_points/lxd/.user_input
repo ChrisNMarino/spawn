@@ -1,0 +1,12 @@
+user_prompt instance_name "Name for the LXC/LXD instance"
+
+if [ "" == "$lxc_distro_options" ]; then
+    lxc_distro_options=rockylinux/9/amd64,almalinux/9/amd64
+fi
+
+if echo $lxc_distro_options | grep -q -v ","; then
+    echo Only one lxc distro option available for the ${spawn_config} configuration. $lxc_distro_options
+    lxc_distro=$lxc_distro_options
+else
+    user_select lxc_distro "The available distro options for the ${spawn_config} configuration" $(echo $lxc_distro_options | sed -e "s/,/ /g")
+fi

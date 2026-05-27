@@ -1,0 +1,59 @@
+
+machine_dir=$HOME/.spawn/machines/wsl_${instance_name}
+mkdir -p $machine_dir
+
+echo "instance_name=${instance_name}" > ${machine_dir}/.config
+echo "spawn_point=${spawn_point}" >> ${machine_dir}/.config
+echo "user_name=${user_name}" >> ${machine_dir}/.config
+
+export PATH=/mnt/c/Windows/system32/:$PATH
+pushd /mnt/c/ > /dev/null
+WINHOMEDOS=$(cmd.exe /c echo %USERPROFILE% | sed -e "s/\r//")
+popd > /dev/null
+WINHOME=$(wslpath $WINHOMEDOS)
+
+
+echo Create New WSL image script
+OUTPUTNAME=$instance_name
+OUTPUTNAME_LWR=$(echo $OUTPUTNAME | tr "[:upper:]" "[:lower:]")
+DOCKERSRC=$docker_distro
+wsl.exe --unregister $OUTPUTNAME
+if [ -f ${DOCKERSRC}.tar ]; then
+	echo Found existing ${DOCKERSRC}.tar, skipping docker export
+else
+	if command -vp podman >/dev/null; then
+		echo "Found podman, using it to generate wsl image"
+		containerizedman=podman
+	elif command -vp docker >/dev/null; then
+		echo "Found docker, using it to generate wsl image"
+		containerizedman=docker
+	else
+		echo "Docker or Podman are required to generate a wsl image"
+		exit
+	fi
+	function getDockerId {
+		$containerizedman container ls -a | grep -i $1 | awk '{print $1}'
+	}
+	$containerizedman container rm $(getDockerId $DOCKERSRC)
+	$containerizedman create $DOCKERSRC
+	$containerizedman export $(getDockerId $DOCKERSRC) > ${DOCKERSRC}.tar
+fi
+sudo mkdir -p ${WINHOME}/wsl_distros/${OUTPUTNAME}
+wsl.exe --import ${OUTPUTNAME} ${WINHOMEDOS}/wsl_distros/${OUTPUTNAME} ./${DOCKERSRC}.tar && \
+
+pushd .. > /dev/null
+    tar -czf ${WINHOME}/spawn.tar.gz spawn
+popd > /dev/null
+
+wsl_cmd="
+    pushd / > /dev/null;
+        tar -xzf ${WINHOME}/spawn.tar.gz;
+        pushd spawn > /dev/null;
+            scripts/system_setup ${spawn_point} ${spawn_config} ${instance_name} ${user_name} ${user_id} ${group_id};
+        popd > /dev/null;
+        rm -rf /spawn;
+    popd > /dev/null
+"
+wsl.exe -d ${instance_name} -u root -e bash -lc "${wsl_cmd}"
+
+rm ${WINHOME}/spawn.tar.gz

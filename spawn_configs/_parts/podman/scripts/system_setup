@@ -1,0 +1,38 @@
+#!/bin/bash
+
+echo Setup Podman
+
+spawn_point=${1}
+instance_name=${2}
+user_name=${3}
+user_id=${4}
+group_id=${5}
+
+workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+pushd $workingdir
+
+if command -v yum >/dev/null; then
+
+	yum install -y podman podman-compose podman-docker
+	sudo chmod u+s /usr/bin/newuidmap
+	sudo chmod u+s /usr/bin/newgidmap
+
+	# wrappers for people calling docker
+	sudo echo "#!/usr/bin/sh" > /usr/bin/docker
+	sudo echo "exec /usr/bin/podman \"\$@\"" >> /usr/bin/docker
+	sudo chmod ugo+x /usr/bin/podman
+	sudo echo "#!/usr/bin/sh" > /usr/bin/docker-compose
+	sudo echo "exec /usr/bin/podman-compose \"\$@\"" >> /usr/bin/docker-compose
+	sudo chmod ugo+x /usr/bin/podman-compose
+
+	echo "user.max_user_namespaces=28633" > /etc/sysctl.d/userns.conf
+	usermod --add-subuids 100000-165535 --add-subgids 100000-165535 ${username}
+
+	touch /etc/containers/nodocker
+
+	#Not sure why but this fixes newuidmap for podman
+	yum reinstall -y shadow
+
+fi
+
+popd

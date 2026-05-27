@@ -1,0 +1,4 @@
+
+PS1='\[${PROMPT_HEADER_CLR}\]----\u@${HOST_DISPLAYED_AS} ${OS_PRETTY}----\[${CLEARED}\]$(gitbranch=$(git branch 2> /dev/null | grep "\\*" | sed -e "s/\\* //"); if [ "$gitbranch" != "" ]; then echo -n "\n${PROMPT_CLR}git:"; if [ "$gitbranch" = "develop" ]; then echo -n "$RED"; else echo -n "$CLEARED"; fi; echo $(basename $(git remote get-url origin) | sed -e "s/\.git//"):$gitbranch; fi)\n\[${PROMPT_CLR}\]pwd:\[${CLEARED}\]\w\n\[${PROMPT_CLR}\]> \[${CLEARED}\]'
+
+unset gitbranch

@@ -1,0 +1,64 @@
+
+#lxc config set ${instance_name} security.privileged true
+
+lxc config device add $instance_name host_home disk path=/home/${user_name}/home source=${HOME} 2>/dev/null
+lxc config device add $instance_name dri_dir disk path=/dev/dri source=/dev/dri 2>/dev/null
+
+if [ -d /dev/bus/usb ]; then
+    lxc config device add $instance_name usb_bus disk path=/dev/bus/usb source=/dev/bus/usb 2>/dev/null
+fi
+
+if ! lxc ls | grep -q .*${instance_name}.*RUNNING.*CONTAINER; then
+    lxc start ${instance_name}
+fi
+user_id=$(lxc exec ${instance_name} -- grep "^${user_name}:" /etc/passwd | sed -E "s/.*:([0-9]+:[0-9]+):.*/\1/")
+group_id=$(echo $user_id | sed -e "s/.*://")
+user_id=$(echo $user_id | sed -e "s/:.*//")
+if [ "" == "${user_id}" ] || [ "" == "${group_id}" ]; then
+    echo "Problem getting user_id(${user_id}) and group_id(${group_id})"
+    exit
+fi
+
+if [ "$DISPLAY" != "" ]; then
+    if [ $(echo $DISPLAY | grep "^:") ]; then
+        DISPLAY_FILE=$(echo $DISPLAY | sed -e "s/:/X/")
+        if [ -f /tmp/.X11-unix/${DISPLAY_FILE} ]; then
+            lxc config device add $instance_name x11 disk path=/tmp/.X11-unix/${DISPLAY_FILE} source=/tmp/.X11-unix/${DISPLAY_FILE} 2>/dev/null
+        else
+            lxc config device add $instance_name x11 proxy \
+                listen=unix:@/tmp/.X11-unix/${DISPLAY_FILE} \
+                connect=unix:@/tmp/.X11-unix/${DISPLAY_FILE} \
+                bind=container \
+                security.uid=${user_id} \
+                security.gid=${group_id} 2>/dev/null
+        fi
+    fi
+fi
+
+if [ "$XAUTHORITY" != "" ]; then
+    lxc config device add $instance_name xauthority disk path=${XAUTHORITY} source=${XAUTHORITY} 2>/dev/null
+fi
+
+
+if [ -d ${XDG_RUNTIME_DIR} ]; then
+    if [ "" != "${WAYLAND_DISPLAY}" ]; then
+        lxc config device add $instance_name wayland_socket disk path=/mnt/${WAYLAND_DISPLAY} source=${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY} 2>/dev/null
+        lxc exec ${instance_name} -- bash -lc "mkdir -p ${XDG_RUNTIME_DIR}; ln -s /mnt/${WAYLAND_DISPLAY} /${XDG_RUNTIME_DIR}/ 2>/dev/null"
+    fi
+    if [ -d ${XDG_RUNTIME_DIR}/pulse ]; then
+        lxc config device add $instance_name pulse_mount disk path=/mnt/pulse source=${XDG_RUNTIME_DIR}/pulse 2>/dev/null
+        lxc exec ${instance_name} -- bash -lc "ln -s /mnt/pulse /${XDG_RUNTIME_DIR}/ 2>/dev/null"
+    fi
+fi
+
+lxc config device add $instance_name mygpu gpu 2>/dev/null
+
+xhost +local:
+nohup lxc exec ${instance_name} --user ${user_id} --group ${group_id} \
+    --env HOME=/home/${user_name} \
+    --env DISPLAY=${DISPLAY} \
+	--env WAYLAND_DISPLAY=${WAYLAND_DISPLAY} \
+    --env XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
+	--env PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \
+    --env XAUTHORITY=${XAUTHORITY} \
+    -- bash -lc "xfce4-terminal --working-directory=~/" >/dev/null 2>&1 &

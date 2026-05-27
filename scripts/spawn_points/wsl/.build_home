@@ -1,0 +1,16 @@
+WINHOME=$(wslpath $(cmd.exe /c echo %USERPROFILE% | sed -e "s/\r//"))
+
+tar -czf ${WINHOME}/spawn.tar.gz .
+
+wsl_cmd="
+    mkdir ~/builder;
+    pushd ~/builder > /dev/null;
+        tar -xzf ${WINHOME}/spawn.tar.gz;
+        scripts/user_setup ${spawn_config} ${spawn_point};
+    popd > /dev/null;
+    rm -rf ~/builder;
+"
+wsl.exe -d ${instance_name} -u ${user_name} -e bash -lc "${wsl_cmd}"
+
+rm ${WINHOME}/spawn.tar.gz
+

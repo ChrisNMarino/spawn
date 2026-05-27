@@ -1,0 +1,1 @@
+alias godot="godot --rendering-driver opengl3 --engine compatibility"

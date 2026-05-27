@@ -1,0 +1,5 @@
+#!/bin/bash
+
+user_name=$(whoami)
+
+sudo chown -R ${user_name}:${user_name} $HOME

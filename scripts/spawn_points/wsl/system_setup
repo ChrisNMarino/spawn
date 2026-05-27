@@ -1,0 +1,38 @@
+#!/bin/bash
+
+spawn_point=${1}
+instance_name=${2}
+user_name=${3}
+user_id=${4}
+group_id=${5}
+
+for uid in $(grep -E ^[A-Za-z0-9_-]+:x:${user_id}: /etc/passwd | sed -E "s/^([A-Za-z0-9]+):.*$/\1/"); do
+	userdel -r $uid
+done
+for uid in $(grep -E ^[A-Za-z0-9_-]+:x:${group_id}: /etc/group | sed -E "s/^([A-Za-z0-9]+):.*$/\1/"); do
+	groupdel -r $uid
+done
+
+groupadd --gid ${group_id} ${user_name}
+useradd --uid ${user_id} --gid ${group_id} -d /home/${user_name} -s /bin/bash -m ${user_name}
+
+export PATH=/mnt/c/Windows/system32/:$PATH
+
+WINHOME=$(wslpath $(cmd.exe /c echo %USERPROFILE% | sed -e "s/\r//"))
+echo "USERPROFILE="$(cmd.exe /c echo %USERPROFILE%)"
+echo "WINHOME=${WINHOME}
+
+mkdir -p /home/${username}
+
+dbus-uuidgen --ensure
+echo "[boot]" > /etc/wsl.conf
+echo "system=true" >> /etc/wsl.conf
+echo "" >> /etc/wsl.conf
+echo "[user]" > /etc/wsl.conf
+echo "default=${username}" >> /etc/wsl.conf
+ln -s ${WINHOME} /home/${username}/home
+ln -s "$(wslpath "$(powershell.exe -NoProfile -NonInteractive -Command "[Environment]::GetFolderPath('Desktop')")" | sed -e "s/\r//")" /home/${username}/Desktop
+ln -s /home/${username}/home/Downloads /home/${username}/Downloads
+
+chown -R ${username}:${username} /home/${username}
+

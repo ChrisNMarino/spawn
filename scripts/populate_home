@@ -1,0 +1,13 @@
+#!/bin/bash
+
+SRC=$1
+
+echo Populating home ${HOME} from ${SRC}
+
+pushd $SRC > /dev/null
+	tar -cf ~/temp.tar .
+popd > /dev/null
+pushd $HOME > /dev/null
+    tar -xf ~/temp.tar
+popd > /dev/null
+rm ~/temp.tar

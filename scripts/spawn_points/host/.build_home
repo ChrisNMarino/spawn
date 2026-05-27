@@ -1,0 +1,6 @@
+
+pushd scripts >/dev/null
+
+./user_setup ${spawn_config} ${spawn_point}
+
+popd >/dev/null

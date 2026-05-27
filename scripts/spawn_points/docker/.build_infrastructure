@@ -1,0 +1,21 @@
+
+echo Building docker container \"$instance_name\" from \"$docker_distro\"
+
+workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+machine_dir=$HOME/.spawn/machines/docker_${instance_name}
+
+if [ -d ${machine_dir}/home ]; then
+    rm -rf ${machine_dir}/home
+fi
+
+mkdir -p ${machine_dir}/home
+
+echo "instance_name=${instance_name}" > ${machine_dir}/.config
+echo "spawn_point=${spawn_point}" >> ${machine_dir}/.config
+echo "user_name=${user_name}" >> ${machine_dir}/.config
+
+docker build \
+    --build-arg DISTRO=$docker_distro \
+    --build-arg INIT_SCRIPT="scripts/system_setup ${spawn_point} ${spawn_config} ${instance_name} ${user_name} ${user_id} ${group_id}" \
+    -f ${workingdir}/Dockerfile -t $instance_name .

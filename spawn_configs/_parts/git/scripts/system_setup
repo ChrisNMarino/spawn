@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if command -v yum >/dev/null; then
+
+	yum install -q -y git
+
+elif command -v apt >/dev/null; then
+
+	apt install -q -y git
+
+fi

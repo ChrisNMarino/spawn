@@ -1,0 +1,77 @@
+#!/bin/bash
+
+workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd ) > /dev/null
+pushd $workingdir > /dev/null
+
+. scripts/.args
+
+# Show the current state
+
+. scripts/.env
+
+show_status_all
+
+user_select action "What shall we do?" run create delete
+
+if [ "$action" == "create" ]; then
+	spawn_point_options="host"
+	if uname -r | grep -q microsoft; then
+		spawn_point_options="${spawn_point_options} wsl"
+	fi
+
+	if command -v docker >/dev/null; then
+		spawn_point_options="${spawn_point_options} docker"
+	fi
+
+	if command -v lxd >/dev/null; then
+		spawn_point_options="${spawn_point_options} lxd"
+	fi
+
+	user_select spawn_point "Choose a spawn point. This is where we intend to create our instance:" $spawn_point_options
+
+	user_select spawn_config "Choose a spawn configuration?" $(ls spawn_configs | grep -v ^_parts$)
+
+	for i in $(build_order $spawn_config); do
+		if [ -f spawn_configs/${i}/scripts/.env ]; then
+			src_or_fail spawn_configs/${spawn_config}/scripts/.env
+		fi
+	done
+	src_or_fail scripts/spawn_points/${spawn_point}/.user_input
+	for i in $(build_order $spawn_config); do
+		if [ -f spawn_configs/${i}/scripts/.user_input ]; then
+			src_or_fail spawn_configs/${i}/scripts/.user_input
+		fi
+	done
+	src_or_fail scripts/spawn_points/${spawn_point}/.build_infrastructure
+	src_or_fail scripts/spawn_points/${spawn_point}/.build_home
+
+elif [ "$action" == "delete" ]; then
+
+	if ls ~/.spawn/machines >/dev/null 2>&1; then
+		user_select machine "Which machine should we delete?" $(ls ~/.spawn/machines)
+
+		. ~/.spawn/machines/${machine}/.config
+
+		. scripts/spawn_points/${spawn_point}/.delete
+
+	else
+		echo nothing available to delete
+		exit
+	fi
+
+elif [ "$action" == "run" ]; then
+	if ls ~/.spawn/machines >/dev/null 2>&1; then
+		user_select machine "Which machine should we run?" $(ls ~/.spawn/machines)
+
+		. ~/.spawn/machines/${machine}/.config
+
+		. scripts/spawn_points/${spawn_point}/.run
+
+	else
+		echo nothing available to run
+		exit
+	fi
+fi
+
+popd > /dev/null
+

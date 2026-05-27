@@ -1,0 +1,80 @@
+for i in $(pstree -np -s $$ | grep -o -E '[0-9]+'); do
+	if [[ -e "/run/WSL/${i}_interop" ]]; then
+		export WSL_INTEROP=/run/WSL/${i}_interop
+	fi
+done
+
+WSL_DISTRO_NAME=$(wslpath -m / | sed -e "s/\/$//" | sed -e "s/.*\///")
+
+HOST_DISPLAYED_AS="$WSL_DISTRO_NAME(on $(hostname))"
+
+export LIBGL_ALWAYS_INDIRECT=0 #GWSL
+export GDK_SCALE=1 #GWSL
+
+complete -W '$(wsl.exe -l | iconv -f utf-16le -t utf-8 | grep -v "Windows Subsystem" | sed -e "s/ (Default)//" | sed -e "s/\r//")' wsl.exe
+
+#IDEAWINPATH=/mnt/c/Program\ Files/JetBrains/$(ls -rt /mnt/c/Program\ Files/JetBrains/ | tail -1)/bin
+#VSTUDIOPATH=/mnt/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Professional/Common7/IDE
+#export PATH=${IDEAWINPATH}:${VSTUDIOPATH}:$PATH
+
+#if ! ps -ef | grep dbus-daemon | grep -vq grep; then
+#	export $(dbus-launch)
+#	echo "init dbus"
+#fi
+
+# This would be for a separate X server. WSLg uses Wayland however
+#export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{ print $2; }'):0
+#export DISPLAY=192.168.56.1:0
+
+#idea() {
+#	if [ "" == "${1}" ]; then
+#		echo "usage: idea <path>"
+#	else
+#		#nohup idea64.exe "//wsl\$/${WSL_DISTRO_NAME}$(realpath ${1})" >/dev/null 2>&1 &
+#		nohup idea64.exe "//wsl.localhost/${WSL_DISTRO_NAME}$(realpath ${1})" >/dev/null 2>&1 &
+#	fi
+#}
+
+#npp() {
+#	if [ "" == "${1}" ]; then
+#		echo "usage: npp <path>"
+#	else
+#		/mnt/c/Program\ Files/Notepad++/notepad++.exe "//wsl\$/${WSL_DISTRO_NAME}$(realpath ${1})"
+#	fi
+#}
+
+mount_drives() {
+	# mount drive letters
+	if [ $(which WMIC.exe) ]; then
+		for drive in $(WMIC.exe logicaldisk get deviceid, volumename | grep ":" | sed -e "s/:/ /" | sed -e "s/[ \t]*\r//g" | sed -e "s/[. \t][. \t]*/_/g"); do
+			DRIVE_LETTER=$(echo $drive | sed -e "s/_.*//")
+			DRIVE_LETTER_LWR=$(echo $DRIVE_LETTER | tr '[:upper:]' '[:lower:]')
+			
+			if ! mount | grep "/mnt/$DRIVE_LETTER_LWR " -q; then
+				if [ ! -d /mnt/$DRIVE_LETTER_LWR ] ; then
+					sudo mkdir /mnt/$DRIVE_LETTER_LWR
+				fi
+				sudo mount -t drvfs $DRIVE_LETTER: /mnt/$DRIVE_LETTER_LWR  2> /dev/null
+			fi
+
+		done
+	fi
+}
+# run in a subshell in the background
+(mount_drives &)
+
+########################
+#
+# Podman helpers
+#
+########################
+
+sudo mount --make-rshared /
+
+if command -v dockerd >/dev/null; then
+	if [ "" == "$(ps -ef | grep dockerd | grep -v grep)" ]; then
+		nohup sudo dockerd >/dev/null 2>&1 &
+		sleep 5
+		sudo chmod ugo+wr /var/run/docker.sock
+	fi
+fi

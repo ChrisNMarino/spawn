@@ -1,0 +1,61 @@
+#!/bin/bash
+
+spawn_point=${1}
+instance_name=${2}
+user_name=${3}
+user_id=${4}
+group_id=${5}
+
+echo Install Linux Basics
+
+if command -v yum >/dev/null; then
+
+	yum update -q -y
+	yum install -q -y epel-release
+	yum makecache -y
+	yum install -q -y hostname
+	yum install -q -y psmisc
+	yum install -q -y sudo
+	yum install -q -y dbus
+	yum install -q -y dbus-x11
+	yum install -q -y glibc-langpack-en.x86_64
+	yum install -q -y freetype fontconfig dejavu-sans-fonts
+	yum install -q -y xfce4-terminal
+	yum install -q -y net-tools
+	yum install -q -y procps
+	yum install -q -y vim
+	yum install -q -y zip
+	yum install -q -y curl
+	dnf install -q -y openssh
+	dnf install -q -y openssh-server
+	dnf install -q -y iputils
+	dnf install -q -y xauth
+	dnf install -q -y pulseaudio-libs
+	systemctl enable --now sshd
+	chmod u+s /usr/bin/ping
+	/usr/bin/crb enable
+
+elif command -v apt >/dev/null; then
+
+	apt update -q -y
+	apt install -q -y psmisc
+	apt install -q -y sudo
+	apt install -q -y fontconfig
+	ln -snf /usr/share/zoneinfo/America/New_York /etc/localtime
+	echo America/New_York > /etc/timezone
+	apt install -q -y xfce4-terminal
+	apt install -q -y net-tools
+	apt install -q -y procps
+	apt install -q -y vim
+	apt install -q -y zip
+	apt install -q -y curl
+	apt install -q -y openssh-client
+	apt install -q -y openssh-server
+	apt install -q -y xauth
+	apt install -q -y libpulse0
+	systemctl enable --now ssh
+fi
+
+echo "LANG=\"en_US.utf8\"" > /etc/locale.conf
+echo "${user_name} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${user_name}
+chmod 0440 /etc/sudoers.d/${user_name}

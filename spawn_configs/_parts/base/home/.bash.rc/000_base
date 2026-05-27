@@ -1,0 +1,119 @@
+HISTCONTROL=ignoreboth
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+shopt -s histappend
+shopt -s checkwinsize
+
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+if [ "" != "$XDG_RUNTIME_DIR" ] && [ ! -d "$XDG_RUNTIME_DIR" ]; then
+	sudo mkdir -p $XDG_RUNTIME_DIR
+	sudo chown $(whoami):$(whoami) $XDG_RUNTIME_DIR
+fi
+
+if [ -x /usr/bin/dircolors ]; then
+	test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+	alias ls='ls --color=auto'
+	alias grep='grep --color=auto'
+	alias fgrep='fgrep --color=auto'
+	alias egrep='egrep --color=auto'
+fi
+
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+if ! shopt -oq posix; then
+	if [ -f /usr/share/bash-completion/bash_completion ]; then
+		. /usr/share/bash-completion/bash_completion
+	elif [ -f /etc/bash_completion ]; then
+		. /etc/bash_completion
+	fi
+fi
+
+OS_PRETTY=$(grep PRETTY_NAME /etc/os-release | sed -e "s/PRETTY_NAME=\"//" | sed -e "s/\"$//")
+
+clr_if_avail () {
+   case "$TERM" in
+      xterm-color|*-256color) color_prompt=yes;;
+   esac
+
+   if [ -n "$force_color_prompt" ]; then
+      if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+         color_prompt=yes
+      else
+         color_prompt=
+      fi
+   fi
+
+   if [ "${color_prompt}" = "yes" ]; then
+      echo -e -n "$1"
+   fi
+}
+
+RED=$(clr_if_avail "\e[38;5;196m")
+ORANGE=$(clr_if_avail "\e[38;5;208m")
+YELLOW=$(clr_if_avail "\e[38;5;226m")
+GREEN=$(clr_if_avail "\e[38;5;40m")
+BLUE=$(clr_if_avail "\e[38;5;27m")
+PURPLE=$(clr_if_avail "\e[38;5;63m")
+LIGHTGRAY=$(clr_if_avail "\e[38;5;250m")
+LIGHTGREEN=$(clr_if_avail "\e[38;5;156m")
+LIGHTBLUE=$(clr_if_avail "\e[38;5;68m")
+WHITE=$(clr_if_avail "\e[38;5;256m")
+GRAY=$(clr_if_avail "\e[38;5;245m")
+BLACK=$(clr_if_avail "\e[38;5;0m")
+BROWN=$(clr_if_avail "\e[38;5;94m")
+TEAL=$(clr_if_avail "\e[38;5;45m")
+TAN=$(clr_if_avail "\e[38;5;136m")
+PINK=$(clr_if_avail "\e[38;5;218m")
+CLEARED=$(clr_if_avail "\033[0m");
+
+show_colors() {
+	echo ${RED}\$\{RED\}${CLEARED}
+	echo ${ORANGE}\$\{ORANGE\}${CLEARED}
+	echo ${YELLOW}\$\{YELLOW\}${CLEARED}
+	echo ${GREEN}\$\{GREEN\}${CLEARED}
+	echo ${BLUE}\$\{BLUE\}${CLEARED}
+	echo ${PURPLE}\$\{PURPLE\}${CLEARED}
+	echo ${LIGHTGRAY}\$\{LIGHTGRAY\}${CLEARED}
+	echo ${LIGHTGREEN}\$\{LIGHTGREEN\}${CLEARED}
+	echo ${LIGHTBLUE}\$\{LIGHTBLUE\}${CLEARED}
+	echo ${WHITE}\$\{WHITE\}${CLEARED}
+	echo ${GRAY}\$\{GRAY\}${CLEARED}
+	echo ${BLACK}\$\{BLACK\}${CLEARED}
+	echo ${BROWN}\$\{BROWN\}${CLEARED}
+	echo ${TEAL}\$\{TEAL\}${CLEARED}
+	echo ${TAN}\$\{TAN\}${CLEARED}
+	echo ${PINK}\$\{PINK\}${CLEARED}
+	echo ${CLEARED}\$\{CLEARED\}${CLEARED}
+	echo
+	echo Example environment variables to change the prompt:
+	echo HOST_DISPLAYED_AS=\$\(hostname\)
+	echo PROMPT_HEADER_CLR=\$\{TAN\}
+	echo PROMPT_CLR=\$\{YELLOW\}
+}
+
+HOST_DISPLAYED_AS=$(hostname)
+PROMPT_HEADER_CLR=$TEAL
+PROMPT_CLR=$BLUE
+
+PS1='\[${PROMPT_HEADER_CLR}\]----\u@${HOST_DISPLAYED_AS} ${OS_PRETTY}----\[${CLEARED}\]\n\[${PROMPT_CLR}\]pwd:\[${CLEARED}\]\w\n\[${PROMPT_CLR}\]> \[${CLEARED}\]'
+
+unset color_prompt force_color_prompt
+
+_host_home_link() {
+	if [ -d ${1} ]; then
+		dest_dir=${HOME}/$(echo $1 | sed -e "s/.*\///")
+		if [ ! -d $dest_dir ]; then
+			ln -s $1 $dest_dir
+		fi
+	fi
+}
+_host_home_link ~/home/Desktop
+_host_home_link ~/home/Documents
+_host_home_link ~/home/Downloads
+_host_home_link ~/home/Music
+_host_home_link ~/home/Pictures
+_host_home_link ~/home/Videos
+
+sudo chown $(whoami):$(whoami) $XDG_RUNTIME_DIR

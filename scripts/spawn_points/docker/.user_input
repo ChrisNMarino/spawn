@@ -1,0 +1,10 @@
+user_prompt instance_name "Name for the docker container. Warning! If this container name is already in use it will be overwritten"
+
+if [ "" == "$docker_distro_options" ]; then
+    user_prompt docker_distro "What distro should we use as a base? Format: distroname:versionnumber. See hub.docker.com for options"
+elif echo $docker_distro_options | grep -q -v ","; then
+    echo Only one docker distro option available for the ${spawn_config} configuration. $docker_distro_options
+    docker_distro=$docker_distro_options
+else
+    user_select docker_distro "The available distro options for the ${spawn_config} configuration" $(echo $docker_distro_options | sed -e "s/,/ /g")
+fi

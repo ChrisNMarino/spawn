@@ -1,0 +1,40 @@
+
+machine_dir=$HOME/.spawn/machines/lxd_${instance_name}
+mkdir -p $machine_dir
+
+echo "instance_name=${instance_name}" > ${machine_dir}/.config
+echo "spawn_point=${spawn_point}" >> ${machine_dir}/.config
+echo "user_name=${user_name}" >> ${machine_dir}/.config
+
+if ! grep -q "root:$UID:1" /etc/subuid; then
+    echo "root:${UID}:1" | sudo tee -a /etc/subuid /etc/subgid
+fi
+
+lxc stop $instance_name 2>/dev/null
+lxc delete $instance_name 2>/dev/null
+lxc launch images:$lxc_distro $instance_name -c security.privileged=true >/dev/null
+
+pushd .. > /dev/null
+    tar -czf ~/spawn.tar.gz spawn
+popd > /dev/null
+
+lxc file push ~/spawn.tar.gz $instance_name/
+
+rm ~/spawn.tar.gz
+
+lxd_cmd="
+    pushd / > /dev/null;
+		yum install -y -q tar 2> /dev/null;
+		apt install -y -q tar 2> /dev/null;
+        tar -xzf spawn.tar.gz;
+        pushd spawn > /dev/null;
+            scripts/system_setup ${spawn_point} ${spawn_config} ${instance_name} ${user_name} ${user_id} ${group_id};
+        popd > /dev/null;
+        rm -rf /spawn;
+		rm /spawn.tar.gz;
+    popd > /dev/null
+"
+lxc exec $instance_name -- bash -lc "${lxd_cmd}"
+
+# gotta figure out how to do this without screwing up host home dir permissions
+#lxc config device add $instance_name home_directory disk source=$HOME path=/home/${user_name}/home

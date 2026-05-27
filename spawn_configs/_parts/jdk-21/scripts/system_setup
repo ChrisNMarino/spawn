@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if command -v yum >/dev/null; then
+
+	yum install -q -y java-21-openjdk java-21-openjdk-devel java-21-openjdk-src
+	yum install -q -y ant
+	yum install -q -y maven
+
+elif command -v apt >/dev/null; then
+
+	yum install -q -y java-21-openjdk java-21-openjdk-devel java-21-openjdk-src
+	apt install -q -y ant
+	apt install -q -y maven
+
+fi

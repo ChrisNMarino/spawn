@@ -1,0 +1,23 @@
+#!/bin/bash
+
+spawn_point=${1}
+instance_name=${2}
+user_name=${3}
+user_id=${4}
+group_id=${5}
+
+for uid in $(grep -E ^[A-Za-z0-9_-]+:x:${user_id}: /etc/passwd | sed -E "s/^([A-Za-z0-9]+):.*$/\1/"); do
+	userdel -r $uid
+done
+for uid in $(grep -E ^[A-Za-z0-9_-]+:x:${group_id}: /etc/group | sed -E "s/^([A-Za-z0-9]+):.*$/\1/"); do
+	groupdel -r $uid
+done
+
+groupadd --gid ${group_id} ${user_name}
+useradd --uid ${user_id} --gid ${group_id} -d /home/${user_name} -s /bin/bash -m ${user_name}
+
+mkdir -p /home/${username}
+
+dbus-uuidgen --ensure
+
+chown -R ${username}:${username} /home/${username}

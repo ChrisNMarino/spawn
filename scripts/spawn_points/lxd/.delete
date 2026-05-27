@@ -1,0 +1,6 @@
+
+lxc stop ${instance_name}
+
+lxc delete ${instance_name}
+
+rm -rf ~/.spawn/machines/${machine}

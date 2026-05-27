@@ -1,0 +1,7 @@
+#!/bin/bash
+
+user_name=$(whoami)
+
+sudo chown -R ${user_name}:${user_name} $HOME
+
+~/builder/scripts/setuplinux/populate_home ~/builder/scripts/spawn_points/wsl/home

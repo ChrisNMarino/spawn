@@ -1,0 +1,22 @@
+apt-get -q update && apt-get install -q -y \
+    libegl1 \
+    libgles2 \
+    libgl1 \
+    mesa-utils \
+    libx11-6 \
+    mesa-vulkan-drivers \
+    libvulkan1 \
+    vulkan-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+mkdir -p /usr/share/godot
+cd /usr/share/godot
+
+godot_name=Godot_v4.6.2-stable_linux.x86_64
+
+curl -L -# -o ${godot_name}.zip \
+  "https://downloads.godotengine.org/?version=4.6.2&flavor=stable&slug=linux.x86_64.zip&platform=linux.64"
+
+unzip -o ${godot_name}.zip
+
+ln /usr/share/godot/${godot_name} /usr/bin/godot

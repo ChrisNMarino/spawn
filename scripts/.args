@@ -1,0 +1,11 @@
+for arg in $@; do
+    if echo $arg | grep -q -v =; then
+        echo "Invalid argument ${arg}"
+        echo "All arguments must have the format: key=val"
+        exit
+    fi
+    key=$(echo $arg | sed -e "s/=.*//")
+    val=$(echo $arg | sed -e "s/^${key}=//")
+    declare -n ref=$key
+    ref=$val
+done

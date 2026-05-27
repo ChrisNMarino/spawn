@@ -1,0 +1,3 @@
+#!/bin/bash
+
+spawn_config=${1}

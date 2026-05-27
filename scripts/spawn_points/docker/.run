@@ -1,0 +1,59 @@
+
+arg_str="-v ${HOME}/.spawn/machines/$machine/home:/home/$user_name":z
+arg_str="${arg_str} -v ${HOME}:/home/${user_name}/home":z
+if [ "$DISPLAY" != "" ]; then
+    if [ $(echo $DISPLAY | grep "^:") ]; then
+        DISPLAY_FILE=$(echo $DISPLAY | sed -e "s/:/X/")
+        if [ -f /tmp/.X11-unix/${DISPLAY_FILE} ]; then
+			arg_str="${arg_str} -v /tmp/.X11-unix/${DISPLAY_FILE}:/tmp/.X11-unix/${DISPLAY_FILE}":z
+		fi
+	fi
+fi
+arg_str="${arg_str} -v /dev/dri:/dev/dri":z
+if [ -d /dev/bus/usb ]; then
+	arg_str="${arg_str} --device=/dev/bus/usb -v /dev/bus/usb:/dev/bus/usb":z
+fi
+if [ -d ${XDG_RUNTIME_DIR} ]; then
+	if [ "" != "${WAYLAND_DISPLAY}" ]; then
+		arg_str="${arg_str} -v ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:z"
+	fi
+	if [ -d ${XDG_RUNTIME_DIR}/pulse ]; then
+		arg_str="${arg_str} -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native:z"
+	fi
+fi
+
+echo
+if command -v nvidia-ctk >/dev/null; then
+	arg_str="${arg_str} --gpus all"
+	echo "Enabling GPU support. If it fails, try:"
+	echo "> nvidia-ctk runtime configure --runtime=docker"
+	echo "and then restart dockerd"
+else
+	echo Unable to find nvidia support for GPU
+fi
+echo
+
+#		--privileged \
+#		--security-opt no-new-privileges=false \
+if ! docker ps | awk '{print $2}' | grep ${instance_name}; then
+	docker run --rm -d \
+		--net=host \
+		--cap-add=SYS_ADMIN \
+		--security-opt seccomp=unconfined \
+		$arg_str \
+		${instance_name}
+fi
+
+instance_id=$(docker ps | grep ${instance_name} | awk '{print $1}')
+
+user_id=$(docker exec ${instance_id} grep "^${user_name}:" /etc/passwd | sed -E "s/.*:([0-9]+:[0-9]+):.*/\1/")
+
+xhost +local:
+
+nohup docker exec \
+	-u $user_id \
+	-e DISPLAY=$DISPLAY \
+	-e WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
+	-e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
+	-e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \
+	${instance_id} bash -lc ". ~/.bashrc; xfce4-terminal --working-directory=~/" >/dev/null 2>&1 &
