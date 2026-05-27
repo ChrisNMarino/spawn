@@ -83,7 +83,9 @@ An xfce4-terminal owned by your new environment is launched. This environment (b
 ## Spawn Config
 This is where you define your development environment. There are multiple things you can configure. We'll walk through each of them here
 <img src=".readme/config-dir-structure.png" width=50%></img>
+
 ### Dependency
+
 file: /spawn_configs/\<my-config\>/depends<br>
 Use an existing spawn config or just add some "_parts". This does some of the work for you before you add any of your customized installation.
 ```
@@ -93,3 +95,31 @@ _parts/jdk-21
 _parts/vscode
 _parts/intellij_idea
 ```
+## Scripts
+
+### scripts/.env
+
+Optionally you can set up environment variables that will help determine the way your spawn will operate. For example the following will provide the supported images for this machine:<br>
+```
+docker_distro_options=rockylinux:9,almalinux:9,oraclelinux:9,ubuntu:latest
+lxc_distro_options=rockylinux/9/amd64,almalinux/9/amd64
+```
+### scripts/.user_input
+
+Ask for user input here. Example:
+
+```
+user_select chosen_widget_versions "Choose from available  versions: " 1.0 1.1 2.0
+```
+### scripts/system_setup
+
+This is run as root. This is where you install things. All of your yum, apt, dnf, whatever. Anything you are going to need to do as root to the system
+
+### scripts/user_setup
+
+Your non-root user sets up their own directory. Some examples might include cloning a repository, etc.
+
+## home
+
+A lot of files destined for the home directory will be static. No need to make the user_setup script do those. If they're in "home", then they'll be overlayed on the output home directory.<br>
+Note: .bashrc is special in spawn. You should not overwrite it. Instead, anything you'd normally do in .bashrc should be in a "child" rc file in ~/.bash.rc/. Everything in there will be executed when .bashrc is sourced.
