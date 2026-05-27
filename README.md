@@ -82,7 +82,8 @@ An xfce4-terminal owned by your new environment is launched. This environment (b
 
 ## Spawn Config
 This is where you define your development environment. There are multiple things you can configure. We'll walk through each of them here
-<img src=".readme/config-dir-structure.png" width=50%></img>
+
+<img src=".readme/config-dir-structure.png" width=30%></img>
 
 ### Dependency
 
