@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if command -v yum >/dev/null; then
+    sudo dnf groupinstall -q -y "Development Tools"
+elif command -v apt >/dev/null; then
+    sudo apt install -q -y build-essential
+fi
