@@ -1,3 +1,4 @@
 #!/bin/bash
 
-sed -i "s/user_name/$(whoami)/g" ~/.vscode/extensions/extensions.json
+code --install-extension vscodevim.vim
+code --install-extension github.copilot-chat

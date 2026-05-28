@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if command -v code >/dev/null; then
+    code --install-extension redhat.java
+    code --install-extension vscjava.vscode-gradle
+    code --install-extension vscjava.vscode-java-debug
+    code --install-extension vscjava.vscode-java-depenedency
+    code --install-extension vscjava.vscode-java-pack
+    code --install-extension vscjava.vscode-java-test
+    code --install-extension vscjava.vscode-maven
+fi
