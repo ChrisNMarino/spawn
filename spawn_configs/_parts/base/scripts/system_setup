@@ -26,6 +26,7 @@ if command -v yum >/dev/null; then
 	yum install -q -y vim
 	yum install -q -y zip
 	yum install -q -y curl
+	yum install -q -y wget
 	dnf install -q -y openssh
 	dnf install -q -y openssh-server
 	dnf install -q -y iputils
@@ -49,6 +50,7 @@ elif command -v apt >/dev/null; then
 	apt install -q -y vim
 	apt install -q -y zip
 	apt install -q -y curl
+	yum install -q -y wget
 	apt install -q -y openssh-client
 	apt install -q -y openssh-server
 	apt install -q -y xauth
