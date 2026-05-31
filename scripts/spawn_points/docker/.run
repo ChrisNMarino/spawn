@@ -1,24 +1,37 @@
 
-arg_str="-v ${HOME}/.spawn/machines/$machine/home:/home/$user_name":z
-arg_str="${arg_str} -v ${HOME}:/home/${user_name}/home":z
+arg_str="-v ${HOME}/.spawn/machines/$machine/home:/home/$user_name":Z
+arg_str="${arg_str} -v ${HOME}:/home/${user_name}/home":Z
 if [ "$DISPLAY" != "" ]; then
     if [ $(echo $DISPLAY | grep "^:") ]; then
         DISPLAY_FILE=$(echo $DISPLAY | sed -e "s/:/X/")
         if [ -f /tmp/.X11-unix/${DISPLAY_FILE} ]; then
-			arg_str="${arg_str} -v /tmp/.X11-unix/${DISPLAY_FILE}:/tmp/.X11-unix/${DISPLAY_FILE}":z
+			arg_str="${arg_str} -v /tmp/.X11-unix/${DISPLAY_FILE}:/tmp/.X11-unix/${DISPLAY_FILE}":Z
 		fi
 	fi
 fi
-arg_str="${arg_str} -v /dev/dri:/dev/dri":z
+arg_str="${arg_str} -v /dev/dri:/dev/dri":Z
 if [ -d /dev/bus/usb ]; then
-	arg_str="${arg_str} --device=/dev/bus/usb -v /dev/bus/usb:/dev/bus/usb":z
+	arg_str="${arg_str} --device=/dev/bus/usb -v /dev/bus/usb:/dev/bus/usb":Z
+fi
+if [ -r /var/run/docker.sock ]; then
+	sudo chmod ugo+rw /var/run/docker.sock
+	arg_str="${arg_str} -v /var/run/docker.sock:/var/run/docker.sock":Z
+fi
+if [ -r /run/podman/podman.sock ]; then
+	arg_str="${arg_str} -v /run/podman/podman.sock:/run/podman/podman.sock":Z
+fi
+if [ -r /run/snap/lxd/common/lxd/unix.socket ]; then
+	arg_str="${arg_str} -v /run/snap/lxd/common/lxd/unix.socket:/run/snap/lxd/common/lxd/unix.socket":Z
+fi
+if [ -r /var/lib/lxd/unix.socket ]; then
+	arg_str="${arg_str} -v /var/lib/lxd/unix.socket:/var/lib/lxd/lxd/unix.socket":Z
 fi
 if [ -d ${XDG_RUNTIME_DIR} ]; then
 	if [ "" != "${WAYLAND_DISPLAY}" ]; then
-		arg_str="${arg_str} -v ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:z"
+		arg_str="${arg_str} -v ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:Z"
 	fi
 	if [ -d ${XDG_RUNTIME_DIR}/pulse ]; then
-		arg_str="${arg_str} -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native:z"
+		arg_str="${arg_str} -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native:Z"
 	fi
 fi
 
