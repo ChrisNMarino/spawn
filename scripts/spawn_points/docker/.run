@@ -21,6 +21,7 @@ if ! docker ps | awk '{print $2}' | grep ${instance_name}; then
 		--net=host \
 		--cap-add=SYS_ADMIN \
 		--security-opt seccomp=unconfined \
+		--hostname $instance_name \
 		$arg_str \
 		${instance_name}
 fi
