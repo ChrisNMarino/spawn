@@ -116,4 +116,38 @@ _host_home_link ~/home/Music
 _host_home_link ~/home/Pictures
 _host_home_link ~/home/Videos
 
+_link_from_host() {
+	dest_dir=$(echo ${1} | sed -E "s/(.*\/).*/\1/")
+	if [ -r /mnt/host_root$1 ]; then
+		sudo mkdir -p $dest_dir
+		sudo ln -s /mnt/host_root${1} $dest_dir 2>/dev/null
+	fi
+}
+if [ "$DISPLAY" != "" ]; then
+    if [ $(echo $DISPLAY | grep "^:") ]; then
+        DISPLAY_FILE=$(echo $DISPLAY | sed -e "s/:/X/")
+		_link_from_host /tmp/.X11-unix/${DISPLAY_FILE}
+	fi
+fi
+if [ -d ${XDG_RUNTIME_DIR} ]; then
+	if [ "" != "${WAYLAND_DISPLAY}" ]; then
+		_link_from_host ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}
+	fi
+	if [ -d ${XDG_RUNTIME_DIR}/pulse ]; then
+		_link_from_host ${XDG_RUNTIME_DIR}/pulse
+	fi
+fi
+_link_from_host /dev/dri
+pushd /mnt/host_root/dev/bus/usb/ >/dev/null
+for i in *; do
+	_link_from_host /dev/bus/usb/$i
+done
+popd >/dev/null
+pushd /mnt/host_root/lib/modules >/dev/null
+for i in *; do
+	_link_from_host /lib/modules/$i
+done
+popd >/dev/null
+
+
 sudo chown $(whoami):$(whoami) $XDG_RUNTIME_DIR

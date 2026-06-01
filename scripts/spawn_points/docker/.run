@@ -1,39 +1,8 @@
 
-arg_str="-v ${HOME}/.spawn/machines/$machine/home:/home/$user_name":Z
-arg_str="${arg_str} -v ${HOME}:/home/${user_name}/home":Z
-if [ "$DISPLAY" != "" ]; then
-    if [ $(echo $DISPLAY | grep "^:") ]; then
-        DISPLAY_FILE=$(echo $DISPLAY | sed -e "s/:/X/")
-        if [ -f /tmp/.X11-unix/${DISPLAY_FILE} ]; then
-			arg_str="${arg_str} -v /tmp/.X11-unix/${DISPLAY_FILE}:/tmp/.X11-unix/${DISPLAY_FILE}":Z
-		fi
-	fi
-fi
-arg_str="${arg_str} -v /dev/dri:/dev/dri":Z
-if [ -d /dev/bus/usb ]; then
-	arg_str="${arg_str} --device=/dev/bus/usb -v /dev/bus/usb:/dev/bus/usb":Z
-fi
-if [ -r /var/run/docker.sock ]; then
-	sudo chmod ugo+rw /var/run/docker.sock
-	arg_str="${arg_str} -v /var/run/docker.sock:/var/run/docker.sock":Z
-fi
-if [ -r /run/podman/podman.sock ]; then
-	arg_str="${arg_str} -v /run/podman/podman.sock:/run/podman/podman.sock":Z
-fi
-if [ -r /run/snap/lxd/common/lxd/unix.socket ]; then
-	arg_str="${arg_str} -v /run/snap/lxd/common/lxd/unix.socket:/run/snap/lxd/common/lxd/unix.socket":Z
-fi
-if [ -r /var/lib/lxd/unix.socket ]; then
-	arg_str="${arg_str} -v /var/lib/lxd/unix.socket:/var/lib/lxd/lxd/unix.socket":Z
-fi
-if [ -d ${XDG_RUNTIME_DIR} ]; then
-	if [ "" != "${WAYLAND_DISPLAY}" ]; then
-		arg_str="${arg_str} -v ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:Z"
-	fi
-	if [ -d ${XDG_RUNTIME_DIR}/pulse ]; then
-		arg_str="${arg_str} -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native:Z"
-	fi
-fi
+arg_str="-v ${HOME}/.spawn/machines/$machine/home:/home/$user_name:Z"
+arg_str="${arg_str} -v ${HOME}/.spawn/machines/$machine/docker_storage:/var/lib/docker:Z"
+arg_str="${arg_str} -v /:/mnt/host_root:Z"
+arg_str="${arg_str} -v ${HOME}:/home/${user_name}/home:Z"
 
 echo
 if command -v nvidia-ctk >/dev/null; then
@@ -46,10 +15,9 @@ else
 fi
 echo
 
-#		--privileged \
-#		--security-opt no-new-privileges=false \
 if ! docker ps | awk '{print $2}' | grep ${instance_name}; then
 	docker run --rm -d \
+		--privileged \
 		--net=host \
 		--cap-add=SYS_ADMIN \
 		--security-opt seccomp=unconfined \
@@ -64,9 +32,9 @@ user_id=$(docker exec ${instance_id} grep "^${user_name}:" /etc/passwd | sed -E 
 xhost +local:
 
 nohup docker exec \
-	-u $user_id \
+	-u $user_name \
 	-e DISPLAY=$DISPLAY \
 	-e WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
 	-e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
 	-e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \
-	${instance_id} bash -lc ". ~/.bashrc; xfce4-terminal --working-directory=~/" >/dev/null 2>&1 &
+	${instance_id} bash -lc "xfce4-terminal --working-directory=~/" >/dev/null 2>&1 &

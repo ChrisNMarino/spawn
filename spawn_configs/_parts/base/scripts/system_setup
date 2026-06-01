@@ -18,6 +18,7 @@ if command -v yum >/dev/null; then
 	yum install -q -y sudo
 	yum install -q -y dbus
 	yum install -q -y dbus-x11
+	yum install -q -y xorg-x11-server-utils
 	yum install -q -y glibc-langpack-en.x86_64
 	yum install -q -y freetype fontconfig dejavu-sans-fonts
 	yum install -q -y xfce4-terminal
@@ -44,6 +45,7 @@ elif command -v apt >/dev/null; then
 	apt install -q -y fontconfig
 	ln -snf /usr/share/zoneinfo/America/New_York /etc/localtime
 	echo America/New_York > /etc/timezone
+	apt install -q -y x11-xserver-utils
 	apt install -q -y xfce4-terminal
 	apt install -q -y net-tools
 	apt install -q -y procps

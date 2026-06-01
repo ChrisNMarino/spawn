@@ -4,4 +4,4 @@ done
 
 docker image rm -f $instance_name
 
-rm -rf ~/.spawn/machines/${machine}
+sudo rm -rf ~/.spawn/machines/${machine}

@@ -1,0 +1,14 @@
+
+_start_dockerd() {
+}
+if command -v dockerd >/dev/null; then
+    if ! ps -ef | grep dockerd | grep -q -v grep; then
+        nohup bash -c '
+        sudo dockerd \
+        --host=unix:///var/run/docker.sock \
+        --host=tcp://0.0.0.0:2375 \
+        --storage-driver=overlay2 >/dev/null 2>&1 &
+        sleep 2
+        sudo chmod ugo+x /var/run/docker.sock' >/dev/null 2>&1 &
+    fi
+fi
