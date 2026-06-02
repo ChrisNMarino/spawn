@@ -1,10 +1,11 @@
 #!/bin/bash
 
 spawn_point=${1}
-instance_name=${2}
-user_name=${3}
-user_id=${4}
-group_id=${5}
+spawn_config=${2}
+instance_name=${3}
+user_name=${4}
+user_id=${5}
+group_id=${6}
 
 echo Setup Docker
 
@@ -14,7 +15,6 @@ pushd $workingdir
 if command -v yum >/dev/null; then
 
 	groupadd docker
-	dnf remove -y @container-tools
 	yum install -y yum-utils
 	yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 	yum install -y docker-ce \

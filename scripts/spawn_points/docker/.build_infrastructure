@@ -5,8 +5,8 @@ workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 machine_dir=$HOME/.spawn/machines/docker_${instance_name}
 
-if [ -d ${machine_dir}/home ]; then
-    rm -rf ${machine_dir}/home
+if [ -d ${machine_dir} ]; then
+    sudo rm -rf ${machine_dir}
 fi
 
 mkdir -p ${machine_dir}/home

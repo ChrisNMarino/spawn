@@ -1,0 +1,32 @@
+#!/bin/bash
+
+spawn_point=${1}
+spawn_config=${2}
+instance_name=${3}
+user_name=${4}
+user_id=${5}
+group_id=${6}
+
+echo Setup LXD
+
+workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+pushd $workingdir
+
+if command -v yum >/dev/null; then
+
+	dnf install -q -y epel-release
+	dnf copr enable -y ganto/lxd
+	dnf install -q -y lxd
+
+elif command -v apt >/dev/null; then
+
+	apt update -q -y
+	apt install -q -y lxd
+	lxd init
+
+fi
+lxd init
+
+usermod -aG docker $user_name
+
+popd

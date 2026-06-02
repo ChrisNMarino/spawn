@@ -1,9 +1,13 @@
 
 if command -v dockerd >/dev/null; then
+    if ! ps -ef | grep containerd | grep -q -v grep; then
+        nohup bash -c 'sudo containerd 2>&1' >/dev/null 2>&1 &
+    fi
     if ! ps -ef | grep dockerd | grep -q -v grep; then
-        nohup bash -c '
-        sudo dockerd \
-        --host=unix:///var/run/docker.sock \
-        --storage-driver=overlay2 >/dev/null 2>&1' >/dev/null 2>&1 &
+        nohup bash -c 'sudo dockerd \
+            --host=unix:///var/run/docker.sock \
+            --storage-driver=vfs >/dev/null 2>&1' >/dev/null 2>&1 &
+        sleep 2
+        sudo chmod -R g+rw /var/run/docker.sock
     fi
 fi

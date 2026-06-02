@@ -1,10 +1,11 @@
 #!/bin/bash
 
 spawn_point=${1}
-instance_name=${2}
-user_name=${3}
-user_id=${4}
-group_id=${5}
+spawn_config=${2}
+instance_name=${3}
+user_name=${4}
+user_id=${5}
+group_id=${6}
 
 echo Install Linux Basics
 
