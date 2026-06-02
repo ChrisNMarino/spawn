@@ -23,17 +23,19 @@ WINHOME=$(wslpath $(cmd.exe /c echo %USERPROFILE% | sed -e "s/\r//"))
 echo "USERPROFILE="$(cmd.exe /c echo %USERPROFILE%)"
 echo "WINHOME=${WINHOME}
 
-mkdir -p /home/${username}
+mkdir -p /home/${user_name}
 
-dbus-uuidgen --ensure
+if command -v dbus-uuidgen >/dev/null; then
+	dbus-uuidgen --ensure
+fi
 echo "[boot]" > /etc/wsl.conf
 echo "system=true" >> /etc/wsl.conf
 echo "" >> /etc/wsl.conf
 echo "[user]" > /etc/wsl.conf
-echo "default=${username}" >> /etc/wsl.conf
-ln -s ${WINHOME} /home/${username}/home
-ln -s "$(wslpath "$(powershell.exe -NoProfile -NonInteractive -Command "[Environment]::GetFolderPath('Desktop')")" | sed -e "s/\r//")" /home/${username}/Desktop
-ln -s /home/${username}/home/Downloads /home/${username}/Downloads
+echo "default=${user_name}" >> /etc/wsl.conf
+ln -s ${WINHOME} /home/${user_name}/home
+ln -s "$(wslpath "$(powershell.exe -NoProfile -NonInteractive -Command "[Environment]::GetFolderPath('Desktop')")" | sed -e "s/\r//")" /home/${user_name}/Desktop
+ln -s /home/${user_name}/home/Downloads /home/${user_name}/Downloads
 
-chown -R ${username}:${username} /home/${username}
+chown -R ${user_name}:${user_name} /home/${user_name}
 

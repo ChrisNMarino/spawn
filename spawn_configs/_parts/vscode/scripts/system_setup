@@ -1,25 +1,29 @@
 #!/bin/bash
 
-echo Installing VSCode
+if uname -r | grep -q -v microsoft; then
 
-if command -v yum >/dev/null; then
+	echo Installing VSCode
 
-	# If running in WSL, VS Code actually runs on the host Windows machine
-	# Only install if not WSL
-	if uname -r | grep -q -v microsoft; then
-		rpm --import https://packages.microsoft.com/keys/microsoft.asc
-		sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-		yum check-update
-		yum install -q -y code
+	if command -v yum >/dev/null; then
+
+		# If running in WSL, VS Code actually runs on the host Windows machine
+		# Only install if not WSL
+		if uname -r | grep -q -v microsoft; then
+			rpm --import https://packages.microsoft.com/keys/microsoft.asc
+			sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+			yum check-update
+			yum install -q -y code
+		fi
+
+	elif command -v apt >/dev/null; then
+
+		apt install -q -y gnupg2
+		wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+		install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+		rm packages.microsoft.gpg
+		echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | tee /etc/apt/sources.list.d/vscode.list > /dev/null
+		apt -q update
+		apt install -q -y code
 	fi
 
-elif command -v apt >/dev/null; then
-
-	apt install -q -y gnupg2
-	wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-	install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-	rm packages.microsoft.gpg
-	echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | tee /etc/apt/sources.list.d/vscode.list > /dev/null
-	apt -q update
-	apt install -q -y code
 fi

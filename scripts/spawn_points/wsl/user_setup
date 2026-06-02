@@ -2,6 +2,8 @@
 
 user_name=$(whoami)
 
-sudo chown -R ${user_name}:${user_name} $HOME
+WINHOME=$(wslpath $(cmd.exe /c echo %USERPROFILE% | sed -e "s/\r//"))
 
-~/builder/scripts/setuplinux/populate_home ~/builder/scripts/spawn_points/wsl/home
+
+
+sudo chown -R ${user_name}:${user_name} $HOME

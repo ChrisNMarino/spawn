@@ -41,11 +41,16 @@ if command -v yum >/dev/null; then
 elif command -v apt >/dev/null; then
 
 	apt update -q -y
+	ln -snf /usr/share/zoneinfo/America/New_York /etc/localtime
+	echo America/New_York > /etc/timezone
+	echo 'keyboard-configuration keyboard-configuration/layoutselect select English (US)' | debconf-set-selections
+	echo 'keyboard-configuration keyboard-configuration/xkb-keymap select us' | debconf-set-selections
+	DEBIAN_FRONTEND=noninteractive dpkg-reconfigure keyboard-configuration
+    apt install -q -y tzdata
+    dpkg-reconfigure --frontend noninteractive tzdata
 	apt install -q -y psmisc
 	apt install -q -y sudo
 	apt install -q -y fontconfig
-	ln -snf /usr/share/zoneinfo/America/New_York /etc/localtime
-	echo America/New_York > /etc/timezone
 	apt install -q -y x11-xserver-utils
 	apt install -q -y xfce4-terminal
 	apt install -q -y net-tools
@@ -53,7 +58,7 @@ elif command -v apt >/dev/null; then
 	apt install -q -y vim
 	apt install -q -y zip
 	apt install -q -y curl
-	yum install -q -y wget
+	apt install -q -y wget
 	apt install -q -y openssh-client
 	apt install -q -y openssh-server
 	apt install -q -y xauth

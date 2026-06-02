@@ -11,6 +11,9 @@ user_name=$(whoami)
 sudo chown -R ${user_name}:${user_name} $HOME
 
 pushd .. > /dev/null
+if [ -d scripts/spawn_points/${spawn_point}/home ]; then
+	scripts/populate_home scripts/spawn_points/${spawn_point}/home
+fi
 for i in $(build_order $spawn_config); do
 	if [ -d spawn_configs/${i}/home ]; then
 		scripts/populate_home spawn_configs/${i}/home
@@ -19,15 +22,24 @@ done
 popd > /dev/null
 
 if [ spawn_points/${spawn_point}/user_setup ]; then
+	echo
+	echo "START spawn_points/${spawn_point}/user_setup $spawn_config"
+	echo
 	spawn_points/${spawn_point}/user_setup $spawn_config
+	echo
+	echo "END spawn_points/${spawn_point}/user_setup $spawn_config"
+	echo
 fi
 
 pushd .. > /dev/null
 for i in $(build_order $spawn_config); do
 	if [ -f spawn_configs/${i}/scripts/user_setup ]; then
-		echo Run: spawn_configs/${i}/scripts/user_setup $spawn_point
+		echo
+		echo "START spawn_configs/${i}/scripts/user_setup $spawn_point"
+		echo
 		spawn_configs/${i}/scripts/user_setup $spawn_point
-		echo Finished: spawn_configs/${i}/scripts/user_setup $spawn_point
+		echo
+		echo "END spawn_configs/${i}/scripts/user_setup $spawn_point"
 		echo
 	fi
 done

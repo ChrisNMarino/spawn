@@ -1,1 +1,1 @@
-/mnt/c/Windows/system32/wsl.exe \~ -d $instance_name -u ${user_name} -- bash -lc "xfce4-terminal --working-directory=~/"
+/mnt/c/Windows/system32/wsl.exe \~ -d $instance_name -u ${user_name} -- bash -l
