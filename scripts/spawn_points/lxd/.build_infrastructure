@@ -12,7 +12,7 @@ fi
 
 lxc stop $instance_name 2>/dev/null
 lxc delete $instance_name 2>/dev/null
-lxc launch images:$lxc_distro $instance_name -c security.privileged=true >/dev/null
+lxc launch $lxc_distro $instance_name -c security.privileged=true
 
 pushd .. > /dev/null
     tar -czf ~/spawn.tar.gz spawn

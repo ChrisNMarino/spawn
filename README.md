@@ -103,7 +103,7 @@ _parts/intellij_idea
 Optionally you can set up environment variables that will help determine the way your spawn will operate. For example the following will provide the supported images for this machine:<br>
 ```
 docker_distro_options=rockylinux:9,almalinux:9,oraclelinux:9,ubuntu:latest
-lxc_distro_options=rockylinux/9/amd64,almalinux/9/amd64
+lxc_distro_options=images:rockylinux/9/amd64,images:almalinux/9/amd64,ubuntu:26.04
 ```
 ### scripts/.user_input
 

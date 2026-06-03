@@ -1,5 +1,6 @@
 
 lxc config set ${instance_name} security.privileged true
+lxc config set ${instance_name} security.nesting true
 
 lxc config device add $instance_name host_home disk path=/home/${user_name}/home source=${HOME} 2>/dev/null
 lxc config device add $instance_name docker_storage disk path=/var/lib/docker source=${HOME}/.spawn/machines/$machine/docker_storage 2>/dev/null

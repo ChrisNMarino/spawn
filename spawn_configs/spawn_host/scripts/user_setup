@@ -1,7 +1,0 @@
-#!/bin/bash
-
-pushd ~/
-	if ! -d spawn; then
-		git clone https://github.com/ChrisNMarino/spawn.git
-	fi
-popd

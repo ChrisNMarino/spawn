@@ -116,13 +116,20 @@ _host_home_link ~/home/Music
 _host_home_link ~/home/Pictures
 _host_home_link ~/home/Videos
 
-if [ -d /mnt/host_root ]; then
+top_root=""
+check_path=/mnt/host_root
+while [ -d $check_path ]; do
+	top_root=$check_path
+	check_path=${check_path}/mnt/host_root
+done
+
+if [ -d $top_root ]; then
 	_link_from_host() {
 		if [ "" != "${1}" ]; then
 			dest_dir=$(echo ${1} | sed -E "s/(.*\/).*/\1/")
-			if [ -r /mnt/host_root$1 ]; then
+			if [ -r ${top_root}${1} ]; then
 				sudo mkdir -p $dest_dir
-				sudo ln -s /mnt/host_root${1} $dest_dir 2>/dev/null
+				sudo ln -s ${top_root}${1} ${dest_dir} 2>/dev/null
 			fi
 		fi
 	}
@@ -143,17 +150,21 @@ if [ -d /mnt/host_root ]; then
 
 	_link_from_host /dev/dri
 	_link_from_host ${XAUTHORITY}
-	pushd /mnt/host_root/dev/bus/usb/ >/dev/null
-	for i in *; do
-		_link_from_host /dev/bus/usb/$i
-	done
-	popd >/dev/null
+	if [ -d ${top_root}/dev/bus/usb ]; then
+		pushd ${top_root}/dev/bus/usb/ >/dev/null
+		for i in *; do
+			_link_from_host /dev/bus/usb/$i
+		done
+		popd >/dev/null
+	fi
 
-	pushd /mnt/host_root/lib/modules >/dev/null
-	for i in *; do
-		_link_from_host /lib/modules/$i
-	done
-	popd >/dev/null
+	if [ -d ${top_root}/lib/modules ]; then
+		pushd ${top_root}/lib/modules >/dev/null
+		for i in *; do
+			_link_from_host /lib/modules/$i
+		done
+		popd >/dev/null
+	fi
 fi
 
 sudo chown $(whoami):$(whoami) $XDG_RUNTIME_DIR
