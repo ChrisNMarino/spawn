@@ -7,9 +7,9 @@ Spawn must be run in a linux-like environment with Docker installed. On Windows 
 Execute the main spawn script and choose the option to create
 ```
 > spawn
-InstanceName         SpawnPoint   Status      
+InstanceName         SpawnPoint   Status
 =============================================================
-my-environment       lxd          STOPPED     
+my-environment       lxd          STOPPED
 =============================================================
 
 What shall we do?
@@ -57,7 +57,7 @@ Now watch it build your new java development environment.
 Execute the main spawn script and choose the option to run
 ```
 > spawn
-InstanceName         SpawnPoint   Status      
+InstanceName         SpawnPoint   Status
 =============================================================
 from-the-readme      docker       RUNNING
 my-environment       lxd          STOPPED
@@ -90,11 +90,10 @@ This is where you define your development environment. There are multiple things
 file: /spawn_configs/\<my-config\>/depends<br>
 Use an existing spawn config or just add some "_parts". This does some of the work for you before you add any of your customized installation.
 ```
-minimalist
-_parts/git
-_parts/jdk-21
 _parts/vscode
 _parts/intellij_idea
+_parts/git
+_parts/jdk-21
 ```
 ## Scripts
 

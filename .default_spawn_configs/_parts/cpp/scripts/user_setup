@@ -1,6 +1,7 @@
 #!/bin/bash
 
 if command -v code >/dev/null; then
+    export DONT_PROMPT_WSL_INSTALL=1
     code --install-extension ms-vscode.cmake-tools
     code --install-extension ms-vscode.cpp-devtools
     code --install-extension ms-vscode.cpptools

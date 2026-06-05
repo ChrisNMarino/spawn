@@ -1,5 +1,5 @@
 minimalist
-_parts/git
 _parts/vscode
+_parts/git
 _parts/docker
 _parts/podman

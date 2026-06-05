@@ -6,6 +6,8 @@ if ! command -v wsl.exe >/dev/null; then
 
 	echo Installing VSCode
 
+	export DONT_PROMPT_WSL_INSTALL=1
+
 	if command -v yum >/dev/null; then
 
 		rpm --import https://packages.microsoft.com/keys/microsoft.asc

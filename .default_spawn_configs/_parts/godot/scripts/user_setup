@@ -1,5 +1,6 @@
 #!/bin/bash
 
 if command -v code >/dev/null; then
+    export DONT_PROMPT_WSL_INSTALL=1
     code --install-extension geequlim.godot-tools
 fi
