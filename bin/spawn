@@ -1,6 +1,6 @@
 #!/bin/bash
 
-workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd ) > /dev/null
+workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )"/.. &> /dev/null && pwd ) > /dev/null
 pushd $workingdir > /dev/null
 
 . scripts/.args
@@ -15,7 +15,8 @@ user_select action "What shall we do?" run create delete
 
 if [ "$action" == "create" ]; then
 	spawn_point_options="host"
-	if uname -r | grep -q microsoft; then
+
+	if command -v wsl.exe >/dev/null; then
 		spawn_point_options="${spawn_point_options} wsl"
 	fi
 
@@ -28,6 +29,19 @@ if [ "$action" == "create" ]; then
 	fi
 
 	user_select spawn_point "Choose a spawn point. This is where we intend to create our instance:" $spawn_point_options
+
+	SPAWN_CONFIG_PATH=${SPAWN_CONFIG_PATH}:${workingdir}/.default_spawn_configs
+	rm -rf spawn_configs
+	mkdir spawn_configs
+	for path in $(sed -e "s/:/\n/g" <<< $SPAWN_CONFIG_PATH); do
+		if [[ "$path" != "" ]] && [[ -d $path ]] ; then
+			for config in $(ls $path); do
+				if [ -d $path/$config ]; then
+					cp -r $path/$config spawn_configs/$config
+				fi
+			done
+		fi
+	done
 
 	user_select spawn_config "Choose a spawn configuration?" $(ls spawn_configs | grep -v ^_parts$)
 
