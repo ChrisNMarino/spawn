@@ -24,7 +24,7 @@ fi
 chmod u+s /usr/bin/newuidmap
 chmod u+s /usr/bin/newgidmap
 echo "user.max_user_namespaces=28633" > /etc/sysctl.d/userns.conf
-usermod --add-subuids 100000-165535 --add-subgids 100000-165535 ${username}
+usermod --add-subuids 100000-165535 --add-subgids 100000-165535 ${user_name}
 
 #Not sure why but this fixes newuidmap for podman
 if command -v yum >/dev/null; then
@@ -32,5 +32,7 @@ if command -v yum >/dev/null; then
 elif command -v apt >/dev/null; then
 	apt reinstall -q -y shadow
 fi
+
+loginctl enable-linger ${user_id}
 
 popd

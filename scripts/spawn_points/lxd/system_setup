@@ -17,8 +17,8 @@ done
 groupadd --gid ${group_id} ${user_name}
 useradd --uid ${user_id} --gid ${group_id} -d /home/${user_name} -s /bin/bash -m ${user_name}
 
-mkdir -p /home/${username}
+mkdir -p /home/${user_name}
 
 dbus-uuidgen --ensure
 
-chown -R ${username}:${username} /home/${username}
+chown -R ${user_name}:${user_name} /home/${user_name}

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if command -v code >/dev/null; then
+    code --install-extension ms-dotnettools.csdevkit
+    code --install-extension ms-dotnettools.csharp
+    code --install-extension ms-dotnettools.vscode-dotnet-runtime
+fi

@@ -18,7 +18,16 @@ if [ "" == "${user_id}" ] || [ "" == "${group_id}" ]; then
     exit
 fi
 
-lxc config device add $instance_name mygpu gpu 2>/dev/null
+for abstract_socket in $(ss -a --unix | grep LISTEN | grep "@/tmp/.X11-unix/X" | sed -E "s/.*(@\/tmp\/.X11-unix\/X[0-9]).*/\1/"); do
+    lxc config device add ${instance_name} x11 proxy \
+        listen=unix:${abstract_socket} \
+        connect=unix:${abstract_socket} \
+        bind=container \
+        security.uid=${user_id} \
+        security.gid=${group_id} 2>/dev/null
+done
+
+lxc config device add $instance_name gpu gpu 2>/dev/null
 
 xhost +local:
 
@@ -31,4 +40,4 @@ lxc exec ${instance_name} \
         XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
         PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \
         XAUTHORITY=${XAUTHORITY} \
-        su ${user_name} -P -c "bash -l"
+        su ${user_name} -P -c "cd ~ && bash -l"

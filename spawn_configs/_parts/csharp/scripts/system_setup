@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if command -v yum >/dev/null; then
+    dnf install -q -y dotnet-sdk-10.0
+elif command -v apt >/dev/null; then
+    apt update -q
+    apt install -q -y dotnet-sdk-10.0
+fi

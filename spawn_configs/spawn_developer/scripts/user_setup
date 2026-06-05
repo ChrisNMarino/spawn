@@ -31,7 +31,7 @@ fi
 
 mkdir -p ~/code/
 pushd ~/code
-	if ! -d spawn; then
+	if [ ! -d spawn ]; then
 		git clone $clone_addr
 	fi
 popd
