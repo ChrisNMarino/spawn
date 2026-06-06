@@ -38,8 +38,12 @@ if [ "$action" == "create" ]; then
 			for config in $(ls $path); do
 				if [ -d $path/$config ]; then
 					cp -r $path/$config spawn_configs/$config
+				else
+					echo "Spawn config $config in $path is not a directory, skipping"
 				fi
 			done
+		else
+			echo "Spawn config path $path does not exist or is not a directory, skipping"
 		fi
 	done
 

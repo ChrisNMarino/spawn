@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if command -v yum >/dev/null; then
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+    dnf -y -q localinstall google-chrome-stable_current_x86_64.rpm
+    rm google-chrome-stable_current_x86_64.rpm
+elif command -v apt >/dev/null; then
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    apt install -y -q ./google-chrome-stable_current_amd64.deb
+    rm google-chrome-stable_current_amd64.deb
+fi
