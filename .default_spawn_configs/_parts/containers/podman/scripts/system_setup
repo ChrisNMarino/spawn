@@ -1,12 +1,5 @@
 #!/bin/bash
 
-spawn_point=${1}
-spawn_config=${2}
-instance_name=${3}
-user_name=${4}
-user_id=${5}
-group_id=${6}
-
 workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 pushd $workingdir
 

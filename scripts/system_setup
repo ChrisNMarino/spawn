@@ -1,21 +1,19 @@
 #!/bin/bash
-spawn_point=${1}
-spawn_config=${2}
-instance_name=${3}
-user_name=${4}
-user_id=${5}
-group_id=${6}
+
+for i in $(cat .build_config); do
+	export $i
+done
 
 . scripts/.env
 
 pushd scripts >/dev/null
 if [ -f spawn_points/${spawn_point}/system_setup ]; then
 	echo
-	echo "START spawn_points/${spawn_point}/system_setup $spawn_point $spawn_config $instance_name $user_name $user_id $group_id"
+	echo "START spawn_points/${spawn_point}/system_setup "
 	echo
-	spawn_points/${spawn_point}/system_setup $spawn_point $spawn_config $instance_name $user_name $user_id $group_id
+	spawn_points/${spawn_point}/system_setup 
 	echo
-	echo "END spawn_points/${spawn_point}/system_setup $spawn_point $spawn_config $instance_name $user_name $user_id $group_id"
+	echo "END spawn_points/${spawn_point}/system_setup" 
 	echo
 
 fi
@@ -24,11 +22,11 @@ popd >/dev/null
 for i in $(build_order $spawn_config); do
 	if [ -f spawn_configs/${i}/scripts/system_setup ]; then
 		echo
-		echo "START spawn_configs/${i}/scripts/system_setup $spawn_point $spawn_config $instance_name $user_name $user_id $group_id"
+		echo "START spawn_configs/${i}/scripts/system_setup "
 		echo
-		spawn_configs/${i}/scripts/system_setup $spawn_point $spawn_config $instance_name $user_name $user_id $group_id
+		spawn_configs/${i}/scripts/system_setup"
 		echo
-		echo "END spawn_configs/${i}/scripts/system_setup $spawn_point $spawn_config $instance_name $user_name $user_id $group_id"
+		echo "END spawn_configs/${i}/scripts/system_setup"
 		echo
 	fi
 done

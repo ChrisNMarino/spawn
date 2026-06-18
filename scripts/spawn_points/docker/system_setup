@@ -1,12 +1,5 @@
 #!/bin/bash
 
-spawn_point=${1}
-spawn_config=${2}
-instance_name=${3}
-user_name=${4}
-user_id=${5}
-group_id=${6}
-
 for uid in $(grep -E ^[A-Za-z0-9_-]+:x:${user_id}: /etc/passwd | sed -E "s/^([A-Za-z0-9]+):.*$/\1/"); do
 	userdel -r $uid
 done
