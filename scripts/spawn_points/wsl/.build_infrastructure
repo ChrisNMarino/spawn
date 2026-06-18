@@ -1,9 +1,6 @@
 
-machine_dir=$HOME/.spawn/machines/wsl_${instance_name}
-mkdir -p $machine_dir
+machine_dir=$(get_machine_dir)
 
-echo "instance_name=${instance_name}" > ${machine_dir}/.config
-echo "spawn_point=${spawn_point}" >> ${machine_dir}/.config
 echo "user_name=${user_name}" >> ${machine_dir}/.config
 
 export PATH=/mnt/c/Windows/system32/:$PATH
@@ -41,9 +38,11 @@ fi
 sudo mkdir -p ${WINHOME}/wsl_distros/${OUTPUTNAME}
 wsl.exe --import ${OUTPUTNAME} ${WINHOMEDOS}/wsl_distros/${OUTPUTNAME} ./${DOCKERSRC}.tar && \
 
+cp $(get_machine_dir)/.config .build_config
 pushd .. > /dev/null
     tar -czf ${WINHOME}/spawn.tar.gz spawn
 popd > /dev/null
+rm .build_config
 
 wsl_cmd="
     pushd / > /dev/null;

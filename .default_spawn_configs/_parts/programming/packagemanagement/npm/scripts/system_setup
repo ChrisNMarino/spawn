@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if command -v dnf >/dev/null; then
+
+	dnf install -q -y nodejs npm
+
+elif command -v apt >/dev/null; then
+
+	DEBIAN_FRONTEND=noninteractive
+	apt install -q -y nodejs npm
+
+fi

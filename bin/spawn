@@ -14,7 +14,8 @@ show_status_all
 user_select action "What shall we do?" run create delete
 
 if [ "$action" == "create" ]; then
-	spawn_point_options="host"
+
+	spawn_point_options=""
 
 	if command -v wsl.exe >/dev/null; then
 		spawn_point_options="${spawn_point_options} wsl"
@@ -28,7 +29,13 @@ if [ "$action" == "create" ]; then
 		spawn_point_options="${spawn_point_options} lxd"
 	fi
 
+	if [ "" == "$spawn_point_options" ]; then
+		echo "No spawn points are available on this machine. You need a virtualization system like Docker/LXD/WSL to use spawn."
+		exit
+	fi
 	user_select spawn_point "Choose a spawn point. This is where we intend to create our instance:" $spawn_point_options
+
+	user_prompt instance_name "Name for the instance. Warning! If this instance name is already in use it would be overwritten"
 
 	SPAWN_CONFIG_PATH=${SPAWN_CONFIG_PATH}:${workingdir}/.default_spawn_configs
 	rm -rf spawn_configs

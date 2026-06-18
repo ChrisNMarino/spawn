@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mkdir -p /usr/share/alire
+cd /usr/share/alire
+curl -L -O https://github.com/alire-project/alire/releases/download/v2.1.1/alr-2.1.1-bin-x86_64-linux.zip
+unzip -o alr-2.1.1-bin-x86_64-linux.zip

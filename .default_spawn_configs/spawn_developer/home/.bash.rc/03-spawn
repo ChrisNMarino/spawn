@@ -1,2 +1,3 @@
 
 export PATH=~/code/spawn/bin/:$PATH
+export SPAWN_CONFIG_PATH=~/code/spawn_configs/

@@ -1,9 +1,11 @@
 #!/bin/bash
-spawn_config=${1}
-spawn_point=${2}
 
 workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd ) > /dev/null
 pushd $workingdir > /dev/null
+
+for i in $(cat ../.build_config); do
+	export $i
+done
 
 . .env
 

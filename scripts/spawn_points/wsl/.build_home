@@ -1,6 +1,8 @@
 WINHOME=$(wslpath $(cmd.exe /c echo %USERPROFILE% | sed -e "s/\r//"))
 
+cp $(get_machine_dir)/.config .build_config
 tar -czf ${WINHOME}/spawn.tar.gz .
+rm .build_config
 
 wsl_cmd="
     mkdir ~/builder;

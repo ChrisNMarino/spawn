@@ -1,4 +1,0 @@
-
-
-sudo scripts/system_setup ${spawn_point} ${spawn_config} $(hostname) ${user_name} ${UID} $(id -g)
-

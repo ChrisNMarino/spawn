@@ -1,5 +1,5 @@
 minimalist
-_parts/vscode
-_parts/git
-_parts/docker
-_parts/podman
+_parts/programming/ide/vscode
+_parts/programming/versioncontrol/git
+_parts/containers/docker
+_parts/containers/podman

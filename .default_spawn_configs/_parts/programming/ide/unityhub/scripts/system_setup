@@ -1,0 +1,33 @@
+#!/bin/bash
+
+echo Installing Unity Hub
+
+if command -v dnf >/dev/null; then
+
+	dnf install -y -q openssl openssl-libs GConf2
+
+	tee /etc/yum.repos.d/unityhub.repo << 'EOF'
+[unityhub]
+name=Unity Hub
+baseurl=https://hub.unity3d.com/linux/repos/rpm/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://hub.unity3d.com/linux/keys/public
+EOF
+
+	dnf install -y -q unityhub
+
+elif command -v apt >/dev/null; then
+
+	apt-get update -y -q
+	apt-get install -y -q curl gpg
+
+	install -d /etc/apt/keyrings
+	curl -fsSL https://hub.unity3d.com/linux/keys/public | gpg --dearmor -o /etc/apt/keyrings/unityhub.gpg
+
+	sh -c 'echo "deb [signed-by=/etc/apt/keyrings/unityhub.gpg] https://hub.unity3d.com/linux/repos/deb stable main" > /etc/apt/sources.list.d/unityhub.list'
+
+	apt-get update -y -q
+	apt-get install -y -q unityhub
+
+fi

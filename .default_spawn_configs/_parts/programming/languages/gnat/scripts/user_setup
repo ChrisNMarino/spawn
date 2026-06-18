@@ -1,0 +1,12 @@
+#!/bin/bash
+
+export PATH=/usr/share/alire/bin:$PATH
+alr --non-interactive toolchain --select
+mkdir -p ~/.bash.rc/
+for gnatmakepath in $(find ~/.local/share/alire/toolchains/ -name "gnatmake"); do
+    echo "export PATH=$(dirname $gnatmakepath):${PATH}" >> ~/.bash.rc/06-gnatpath
+done
+if command -v code >/dev/null; then
+    export DONT_PROMPT_WSL_INSTALL=1
+    code --install-extension adacore.ada
+fi

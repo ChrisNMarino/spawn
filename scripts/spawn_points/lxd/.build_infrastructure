@@ -1,9 +1,6 @@
 
-machine_dir=$HOME/.spawn/machines/lxd_${instance_name}
-mkdir -p $machine_dir
+machine_dir=$(get_machine_dir)
 
-echo "instance_name=${instance_name}" > ${machine_dir}/.config
-echo "spawn_point=${spawn_point}" >> ${machine_dir}/.config
 echo "user_name=${user_name}" >> ${machine_dir}/.config
 
 if ! grep -q "root:$UID:1" /etc/subuid; then
@@ -14,9 +11,11 @@ lxc stop $instance_name 2>/dev/null
 lxc delete $instance_name 2>/dev/null
 lxc launch $lxc_distro $instance_name -c security.privileged=true
 
+cp $(get_machine_dir)/.config .build_config
 pushd .. > /dev/null
     tar -czf ~/spawn.tar.gz spawn
 popd > /dev/null
+rm .build_config
 
 lxc file push ~/spawn.tar.gz $instance_name/
 

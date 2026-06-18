@@ -3,17 +3,10 @@ echo Building docker container \"$instance_name\" from \"$docker_distro\"
 
 workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-machine_dir=$HOME/.spawn/machines/docker_${instance_name}
+machine_dir=$(get_machine_dir)
 
-if [ -d ${machine_dir} ]; then
-    sudo rm -rf ${machine_dir}
-fi
-
-mkdir -p ${machine_dir}/home
-
-echo "instance_name=${instance_name}" > ${machine_dir}/.config
-echo "spawn_point=${spawn_point}" >> ${machine_dir}/.config
-echo "user_name=${user_name}" >> ${machine_dir}/.config
+cp $(get_machine_dir)/.config .build_config
+rm .build_config
 
 docker build \
     --build-arg DISTRO=$docker_distro \

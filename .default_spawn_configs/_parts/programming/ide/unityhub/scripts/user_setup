@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# TODO automate this and collect the username/password in a .user_input script
+# unityhub -- --headless manual-activation --username "your-email@example.com" --password "your-password" --serial "PRO-XXXX-XXXX-XXXX-XXXX"
+# unityhub -- --headless install-modules --list
+# unityhub -- --headless install --version 2022.3.15f1
+# unityhub -- --headless install-modules --version 2022.3.15f1 --module android linux-il2cpp

@@ -1,4 +1,3 @@
-user_prompt instance_name "Name for the LXC/LXD instance"
 
 if echo $lxc_distro_options | grep -q -v ","; then
     echo Only one lxc distro option available for the ${spawn_config} configuration. $lxc_distro_options

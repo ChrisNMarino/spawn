@@ -1,5 +1,6 @@
-
+cp $(get_machine_dir)/.config .build_config
 tar -czf ~/spawn.tar.gz .
+rm .build_config
 lxc file push ~/spawn.tar.gz $instance_name/home/${user_name}/
 rm ~/spawn.tar.gz
 lxc exec $instance_name -- chown ${user_name}:${user_name} /home/${user_name}/spawn.tar.gz
