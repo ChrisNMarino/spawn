@@ -35,6 +35,7 @@ lxc exec ${instance_name} \
     --user ${user_id} --group ${group_id} \
     -- sudo \
         HOME=/home/${user_name} \
+        TERM=xterm-256color \
         DISPLAY=${DISPLAY} \
         WAYLAND_DISPLAY=${WAYLAND_DISPLAY} \
         XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
