@@ -3,9 +3,12 @@
 workingdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd ) > /dev/null
 pushd $workingdir > /dev/null
 
+saved_ifs=$IFS
+IFS=$'\n'
 for i in $(cat ../.build_config); do
 	export $i
 done
+IFS=$saved_ifs
 
 . .env
 
