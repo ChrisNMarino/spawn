@@ -9,7 +9,7 @@ cp $(get_machine_dir)/.config .build_config
 
 docker build \
     --build-arg DISTRO=$docker_distro \
-    --build-arg INIT_SCRIPT="scripts/system_setup \
+    --build-arg INIT_SCRIPT="scripts/system_setup" \
     -f ${workingdir}/Dockerfile -t $instance_name .
 
 rm .build_config
