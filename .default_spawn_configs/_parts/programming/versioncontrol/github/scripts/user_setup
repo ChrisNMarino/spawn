@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo
+echo Time to add SSH Key to log into Github.
+echo This spawn config uses a github repository
+echo
+cat ~/.ssh/id_rsa.pub
+echo
+
+echo
+echo The key above must be added into your github public key registry
+echo https://github.com/settings/ssh/new
+echo
+read -p "First add the key, then press enter when completed"

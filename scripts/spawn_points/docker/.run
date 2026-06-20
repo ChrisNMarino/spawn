@@ -15,10 +15,7 @@ else
 fi
 echo
 
-echo Trying to run $instance_name
-
 if ! docker ps | awk '{print $2}' | grep ${instance_name}; then
-echo running
 	docker run --rm -d \
 		--privileged \
 		--net=host \
@@ -31,7 +28,6 @@ fi
 
 instance_id=$(docker ps | grep ${instance_name} | awk '{print $1}')
 
-echo instance_id? $instance_id
 xhost +local:
 
 user_name=$(whoami)

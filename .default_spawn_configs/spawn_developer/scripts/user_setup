@@ -1,37 +1,6 @@
 #!/bin/bash
 
-i=""
-while [ "$i" != "y" ] && [ "$i" != "n" ]; do
-	read -p "Do you want to set up github permission in order to commit? (y/n): " i
-done
-
-if [ "$i" == "y" ]; then
-	echo Time to add SSH Key to log into BitBucket.
-	echo
-	echo Host bitbucket.us.dignitastech.com > ~/.ssh/config
-	echo '    StrictHostKeyChecking no' >> ~/.ssh/config
-	chmod 600 ~/.ssh/config
-	ls -l ~/.ssh
-	echo
-	echo
-	cat ~/.ssh/id_rsa.pub
-	echo
-
-	echo
-	echo The key above must be added into your github public key registry
-	echo https://github.com/settings/ssh/new
-	echo
-	read -p "First add the key, then press enter when completed"
-
-	clone_addr="git@github.com:ChrisNMarino/spawn.git"
-else
-	clone_addr="https://github.com/ChrisNMarino/spawn.git"
-fi
-
-
 mkdir -p ~/code/
 pushd ~/code
-	if [ ! -d spawn ]; then
-		git clone $clone_addr
-	fi
+	git clone git@github.com:ChrisNMarino/spawn.git
 popd
